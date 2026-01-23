@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Gravity Assist v3</title>
+<title>Gravity Assist v4</title>
 <style>
 body { margin:0; overflow:hidden; background:black; font-family:sans-serif; }
 canvas { display:block; }
@@ -49,6 +49,9 @@ let boosterList=[], numBoosters=2;
 // Monster
 let monsters=[];
 
+// Fireworks
+let fireworks=[];
+
 // Initialize targets
 function spawnTargets(){
     targets=[];
@@ -81,7 +84,7 @@ function spawnBoosters(){
         boosterList.push({
             x: W + Math.random()*W*4,
             y: Math.random()*H,
-            radius:8,
+            radius:16, // BIGGER BOOSTER
             color:'magenta'
         });
     }
@@ -90,7 +93,7 @@ function spawnBoosters(){
 // Initialize monsters
 function spawnMonsters(){
     monsters=[];
-    if(level>=3){ // Monster appears from level 3
+    if(level>=3){
         monsters.push({
             x: W + 300,
             y: Math.random()*(H-100)+50,
@@ -100,12 +103,35 @@ function spawnMonsters(){
     }
 }
 
-spawnTargets();
-spawnObstacles();
-spawnBoosters();
-spawnMonsters();
+// Firework particle
+function createFirework(x,y,intensity){
+    for(let i=0;i<intensity*10;i++){
+        fireworks.push({
+            x:x, y:y,
+            vx:(Math.random()-0.5)*intensity*3,
+            vy:(Math.random()-0.5)*intensity*3,
+            life:60+Math.random()*30,
+            color:`hsl(${Math.random()*360},80%,60%)`
+        });
+    }
+}
 
-// Draw
+// Draw firework
+function drawFireworks(){
+    fireworks.forEach(f=>{
+        ctx.fillStyle=f.color;
+        ctx.beginPath();
+        ctx.arc(f.x,f.y,2,0,Math.PI*2);
+        ctx.fill();
+        f.x += f.vx;
+        f.y += f.vy;
+        f.vy += 0.05; // gravity on particles
+        f.life--;
+    });
+    fireworks = fireworks.filter(f=>f.life>0);
+}
+
+// Draw player
 function drawPlayer(){
     ctx.fillStyle=player.color;
     ctx.beginPath();
@@ -113,6 +139,7 @@ function drawPlayer(){
     ctx.fill();
 }
 
+// Draw targets
 function drawTargets(){
     targets.forEach(t=>{
         ctx.fillStyle=t.color;
@@ -122,6 +149,7 @@ function drawTargets(){
     });
 }
 
+// Draw obstacles
 function drawObstacles(){
     ctx.strokeStyle='rgba(255,0,0,0.6)';
     ctx.lineWidth=3;
@@ -132,11 +160,11 @@ function drawObstacles(){
     });
 }
 
+// Draw boosters
 function drawBoosters(){
     boosterList.forEach(b=>{
         ctx.fillStyle=b.color;
         ctx.beginPath();
-        // draw as triangle
         ctx.moveTo(b.x, b.y - b.radius);
         ctx.lineTo(b.x - b.radius, b.y + b.radius);
         ctx.lineTo(b.x + b.radius, b.y + b.radius);
@@ -145,6 +173,7 @@ function drawBoosters(){
     });
 }
 
+// Draw monsters
 function drawMonsters(){
     monsters.forEach(m=>{
         ctx.fillStyle='darkred';
@@ -169,7 +198,7 @@ function drawTrail(){
     ctx.globalAlpha=1;
 }
 
-// Update
+// Update player
 function updatePlayer(){
     let dx = mouse.x - player.x;
     let dy = mouse.y - player.y;
@@ -187,11 +216,10 @@ function updatePlayer(){
 // Update world
 function updateWorld(){
     targets.forEach(t=> t.x -= scrollSpeed);
-    obstacles.forEach(o=> o.x -= scrollSpeed);
+    obstacles.forEach(o=> t=o?o.x-=scrollSpeed:0);
     boosterList.forEach(b=> b.x -= scrollSpeed);
-    monsters.forEach(m=> m.x += m.vx); // monster moves left
+    monsters.forEach(m=> m.x += m.vx);
 
-    // recycle targets
     targets.forEach(t=>{ if(t.x<-50){ t.x=W+Math.random()*W; t.y=Math.random()*H; t.color=`hsl(${Math.random()*360},80%,60%)`; }});
     obstacles.forEach(o=>{ if(o.x<-50){ o.x=W+Math.random()*W; o.y=Math.random()*H; }});
     boosterList.forEach(b=>{ if(b.x<-50){ b.x=W+Math.random()*W*2; b.y=Math.random()*H; }});
@@ -222,7 +250,12 @@ function checkCollisions(){
             if(player.boosters>0){
                 player.boosters--;
                 boostersEl.innerText = player.boosters;
-                o.x=W+Math.random()*W; // destroy obstacle
+                // destroy obstacle and trigger firework
+                createFirework(o.x,o.y, Math.ceil(o.radius/10));
+                player.score += Math.ceil(o.radius/10); // points based on size
+                scoreEl.innerText = player.score;
+                o.x=W+Math.random()*W;
+                o.y=Math.random()*H;
             } else {
                 player.score = Math.max(0,player.score-2);
                 scoreEl.innerText=player.score;
@@ -249,13 +282,17 @@ function checkCollisions(){
         let dx=player.x-m.x, dy=player.y-m.y;
         let d=Math.sqrt(dx*dx+dy*dy);
         if(d<player.radius+m.radius){
-            if(player.boosters>=3){ // need 3 boosters to destroy monster
-                player.boosters -=3;
+            if(player.boosters>=3){
+                player.boosters-=3;
                 boostersEl.innerText=player.boosters;
-                m.x=W + Math.random()*W; // destroy monster
+                createFirework(m.x,m.y,5); // big firework
+                player.score += 5; // points based on monster size
+                scoreEl.innerText = player.score;
+                m.x=W + Math.random()*W; 
+                m.y=Math.random()*H;
             } else {
                 player.score = Math.max(0,player.score-5);
-                scoreEl.innerText = player.score;
+                scoreEl.innerText=player.score;
                 player.x=100;
                 player.y=H/2;
             }
@@ -295,6 +332,7 @@ function animate(){
     drawBoosters();
     drawMonsters();
     drawPlayer();
+    drawFireworks();
 
     requestAnimationFrame(animate);
 }
