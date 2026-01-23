@@ -1,0 +1,25 @@
+{
+  "name": "gravity-assist-main",
+  "version": "1.0.0",
+  "description": "Gravity Painter is a simple browser-based game built with **HTML5 Canvas and JavaScript**.  \r You control a gravity field using your mouse to guide a particle, collect targets, and avoid repulsors.",
+  "main": "sw.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raviteja1991/gravity-assist-main.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/raviteja1991/gravity-assist-main/issues"
+  },
+  "homepage": "https://github.com/raviteja1991/gravity-assist-main#readme",
+  "dependencies": {
+    "@capacitor/cli": "^2.5.0",
+    "@capacitor/core": "^8.0.1"
+  }
+}

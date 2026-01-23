@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Gravity Assist</title>
+
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="css/style.css">
+
+<link rel="apple-touch-icon" sizes="180x180" href="icon-512.png">
+<link rel="apple-touch-icon" sizes="120x120" href="icon-120.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+</head>
+<body>
+<div id="ui">
+Score: <span id="score">0</span> | Level: <span id="level">1</span> | Boosters: <span id="boosters">0</span>
+</div>
+<canvas id="c"></canvas>
+
+<!-- Version label -->
+<div id="version-label">v5.0</div>
+
+<!-- Version modal -->
+<div id="version-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <h3>App Info</h3>
+    <p id="version-info"></p>
+  </div>
+</div>
+
+<script src="js/spawn.js"></script>
+<script src="js/draw.js"></script>
+<script src="js/update.js"></script>
+<script src="js/collisions.js"></script>
+<script src="js/main.js"></script>
+<script src="js/version.js"></script>
+
+</body>
+</html>
