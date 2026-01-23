@@ -2,180 +2,202 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Gravity Painter</title>
+<title>Space Painter Impact</title>
 <style>
-body { margin:0; overflow:hidden; background:black; }
+body { margin:0; overflow:hidden; background:black; font-family:sans-serif; }
 canvas { display:block; }
 #ui {
-  position:absolute;
-  top:10px; left:10px;
-  color:white;
-  font-family:sans-serif;
-  font-size:18px;
+  position:absolute; top:10px; left:10px; color:white;
 }
 </style>
 </head>
 <body>
-<div id="ui">
-Score: <span id="score">0</span><br>
-Move mouse to control gravity field. Avoid red repulsors!
-</div>
+<div id="ui">Score: <span id="score">0</span> | Level: <span id="level">1</span></div>
 <canvas id="c"></canvas>
 <script>
-const canvas = document.getElementById('c');
-const ctx = canvas.getContext('2d');
-const scoreEl = document.getElementById('score');
+const canvas=document.getElementById('c');
+const ctx=canvas.getContext('2d');
+const scoreEl=document.getElementById('score');
+const levelEl=document.getElementById('level');
 
-function resize(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
+let W,H;
+function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
 window.addEventListener('resize',resize);
 resize();
 
-// Particle controlled by gravity field
-let particle = { x: canvas.width/2, y: canvas.height/2, vx:0, vy:0, color:'white', radius:12 };
+// Player
+let player={x:100, y:H/2, vx:0, vy:0, color:'cyan', radius:12, score:0};
 
-// Mouse gravity field
-let mouse = { x: canvas.width/2, y: canvas.height/2 };
-window.addEventListener('mousemove', e => { mouse.x=e.clientX; mouse.y=e.clientY; });
+// Gravity field controlled by mouse
+let mouse={x:player.x, y:player.y};
+window.addEventListener('mousemove', e=>{ mouse.x=e.clientX; mouse.y=e.clientY; });
 
-// Targets and repulsors
-let targets = [];
-let repulsors = [];
-let score = 0;
-const numTargets = 6;
-const numRepulsors = 3;
+// Side-scrolling world
+let scrollSpeed=2;
+let level=1;
 
-// Initialize targets
+// Targets (points to collect)
+let targets=[];
+let numTargets=5;
+
+// Obstacles (repulsors / enemies)
+let obstacles=[];
+let numObstacles=3;
+
 function spawnTargets(){
-  targets=[];
-  for(let i=0;i<numTargets;i++){
-    targets.push({
-      x:Math.random()*canvas.width,
-      y:Math.random()*canvas.height,
-      color:`hsl(${Math.random()*360},80%,60%)`,
-      radius:14
-    });
-  }
+    targets=[];
+    for(let i=0;i<numTargets;i++){
+        targets.push({
+            x: W + Math.random()*W*2,
+            y: Math.random()*H,
+            radius:10+Math.random()*5,
+            color:`hsl(${Math.random()*360},80%,60%)`
+        });
+    }
 }
 
-// Initialize repulsors
-function spawnRepulsors(){
-  repulsors=[];
-  for(let i=0;i<numRepulsors;i++){
-    repulsors.push({
-      x:Math.random()*canvas.width,
-      y:Math.random()*canvas.height,
-      radius:30
-    });
-  }
+function spawnObstacles(){
+    obstacles=[];
+    for(let i=0;i<numObstacles;i++){
+        obstacles.push({
+            x: W + Math.random()*W*3,
+            y: Math.random()*H,
+            radius:20+Math.random()*10
+        });
+    }
 }
 
 spawnTargets();
-spawnRepulsors();
+spawnObstacles();
 
 // Draw functions
-function drawParticle(){
-  ctx.fillStyle=particle.color;
-  ctx.beginPath();
-  ctx.arc(particle.x,particle.y,particle.radius,0,Math.PI*2);
-  ctx.fill();
+function drawPlayer(){
+    ctx.fillStyle=player.color;
+    ctx.beginPath();
+    ctx.arc(player.x, player.y, player.radius,0,Math.PI*2);
+    ctx.fill();
 }
 
 function drawTargets(){
-  targets.forEach(t=>{
-    ctx.fillStyle=t.color;
-    ctx.beginPath();
-    ctx.arc(t.x,t.y,t.radius,0,Math.PI*2);
-    ctx.fill();
-  });
+    targets.forEach(t=>{
+        ctx.fillStyle=t.color;
+        ctx.beginPath();
+        ctx.arc(t.x, t.y, t.radius,0,Math.PI*2);
+        ctx.fill();
+    });
 }
 
-function drawRepulsors(){
-  ctx.strokeStyle='rgba(255,0,0,0.6)';
-  ctx.lineWidth=3;
-  repulsors.forEach(r=>{
-    ctx.beginPath();
-    ctx.arc(r.x,r.y,r.radius,0,Math.PI*2);
-    ctx.stroke();
-  });
+function drawObstacles(){
+    ctx.strokeStyle='rgba(255,0,0,0.6)';
+    ctx.lineWidth=3;
+    obstacles.forEach(o=>{
+        ctx.beginPath();
+        ctx.arc(o.x, o.y, o.radius,0,Math.PI*2);
+        ctx.stroke();
+    });
 }
 
-function drawGravityCursor(){
-  ctx.strokeStyle='rgba(255,255,255,0.5)';
-  ctx.lineWidth=2;
-  ctx.beginPath();
-  ctx.arc(mouse.x,mouse.y,20,0,Math.PI*2);
-  ctx.stroke();
+// Update
+function updatePlayer(){
+    let dx = mouse.x - player.x;
+    let dy = mouse.y - player.y;
+    player.vx += dx*0.01;
+    player.vy += dy*0.01;
+    player.vx *= 0.92;
+    player.vy *= 0.92;
+    player.x += player.vx;
+    player.y += player.vy;
+
+    if(player.y<0) player.y=0;
+    if(player.y>H) player.y=H;
 }
 
-// Update particle physics
-function updateParticle(){
-  // Gravity pull toward mouse
-  let dx = mouse.x - particle.x;
-  let dy = mouse.y - particle.y;
-  let dist = Math.sqrt(dx*dx+dy*dy);
-  let force = Math.min(dist/200,0.5);
-  particle.vx += dx*0.02*force;
-  particle.vy += dy*0.02*force;
+function updateWorld(){
+    // Move targets and obstacles left
+    targets.forEach(t=> t.x -= scrollSpeed);
+    obstacles.forEach(o=> o.x -= scrollSpeed);
 
-  // Repulsor push
-  repulsors.forEach(r=>{
-    let dxr = particle.x - r.x;
-    let dyr = particle.y - r.y;
-    let d = Math.sqrt(dxr*dxr + dyr*dyr);
-    if(d < r.radius + particle.radius){
-      particle.vx += dxr*0.05;
-      particle.vy += dyr*0.05;
+    // Recycle targets & obstacles
+    targets.forEach(t=>{ if(t.x<-50){ t.x=W + Math.random()*W; t.y=Math.random()*H; t.color=`hsl(${Math.random()*360},80%,60%)`; }});
+    obstacles.forEach(o=>{ if(o.x<-50){ o.x=W + Math.random()*W; o.y=Math.random()*H; }});
+}
+
+// Collision
+function checkCollisions(){
+    targets.forEach(t=>{
+        let dx=player.x-t.x;
+        let dy=player.y-t.y;
+        let d=Math.sqrt(dx*dx+dy*dy);
+        if(d<player.radius+t.radius){
+            player.color=t.color;
+            player.score++;
+            scoreEl.innerText=player.score;
+            // push target ahead to recycle
+            t.x=W + Math.random()*W;
+            t.y=Math.random()*H;
+            t.color=`hsl(${Math.random()*360},80%,60%)`;
+        }
+    });
+
+    obstacles.forEach(o=>{
+        let dx=player.x-o.x;
+        let dy=player.y-o.y;
+        let d=Math.sqrt(dx*dx+dy*dy);
+        if(d<player.radius+o.radius){
+            // hit obstacle → lose score, reset player slightly
+            player.score = Math.max(0, player.score-2);
+            scoreEl.innerText=player.score;
+            player.x = 100;
+            player.y = H/2;
+        }
+    });
+}
+
+// Level system
+function checkLevel(){
+    let newLevel = Math.floor(player.score/10)+1;
+    if(newLevel>level){
+        level=newLevel;
+        scrollSpeed+=0.5;
+        numTargets+=1;
+        numObstacles+=1;
+        spawnTargets();
+        spawnObstacles();
+        levelEl.innerText = level;
     }
-  });
-
-  // Friction
-  particle.vx *= 0.92;
-  particle.vy *= 0.92;
-
-  particle.x += particle.vx;
-  particle.y += particle.vy;
-
-  // Wrap edges
-  if(particle.x<0) particle.x=canvas.width;
-  if(particle.x>canvas.width) particle.x=0;
-  if(particle.y<0) particle.y=canvas.height;
-  if(particle.y>canvas.height) particle.y=0;
 }
 
-// Collision with targets
-function checkTargets(){
-  targets.forEach(t=>{
-    let dx = particle.x - t.x;
-    let dy = particle.y - t.y;
-    let d = Math.sqrt(dx*dx+dy*dy);
-    if(d < particle.radius + t.radius){
-      particle.color = t.color;
-      score++;
-      scoreEl.innerText = score;
-      t.x = Math.random()*canvas.width;
-      t.y = Math.random()*canvas.height;
-      t.color = `hsl(${Math.random()*360},80%,60%)`;
-    }
-  });
+// Trail
+let trail = [];
+function drawTrail(){
+    trail.push({x:player.x, y:player.y, color:player.color});
+    if(trail.length>100) trail.shift();
+    trail.forEach((p,i)=>{
+        ctx.fillStyle=p.color;
+        ctx.globalAlpha = i/trail.length*0.6;
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,5,0,Math.PI*2);
+        ctx.fill();
+    });
+    ctx.globalAlpha=1;
 }
 
-// Animation loop
+// Animate
 function animate(){
-  // Trail effect
-  ctx.globalCompositeOperation='source-over';
-  ctx.fillStyle='rgba(0,0,0,0.15)';
-  ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='rgba(0,0,0,0.15)';
+    ctx.fillRect(0,0,W,H);
 
-  ctx.globalCompositeOperation='lighter';
+    updatePlayer();
+    updateWorld();
+    checkCollisions();
+    checkLevel();
 
-  updateParticle();
-  checkTargets();
-  drawParticle();
-  drawTargets();
-  drawRepulsors();
-  drawGravityCursor();
+    drawTrail();
+    drawTargets();
+    drawObstacles();
+    drawPlayer();
 
-  requestAnimationFrame(animate);
+    requestAnimationFrame(animate);
 }
 
 animate();
