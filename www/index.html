@@ -3,20 +3,55 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
 <title>Gravity Assist</title>
 
+<!-- PWA & Manifest -->
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="css/style.css">
+<meta name="theme-color" content="#000000">
+<meta name="description" content="Control a gravity field with your mouse to guide a particle, collect targets, and avoid obstacles.">
+<meta name="color-scheme" content="dark">
 
-<link rel="apple-touch-icon" sizes="180x180" href="icon-512.png">
-<link rel="apple-touch-icon" sizes="120x120" href="icon-120.png">
-<link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
-<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
-
+<!-- Apple iOS App -->
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gravity Assist">
+
+<!-- Apple Touch Icons (various sizes for iOS) -->
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<link rel="apple-touch-icon" sizes="167x167" href="icon-167.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
+<link rel="apple-touch-icon" sizes="120x120" href="icon-120.png">
+
+<!-- Favicon for browsers -->
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="96x96" href="icon-96.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icon-16.png">
+<link rel="shortcut icon" href="favicon.ico">
+
+<!-- Windows Tiles -->
+<meta name="msapplication-TileColor" content="#000000">
+<meta name="msapplication-TileImage" content="icon-144.png">
+<meta name="msapplication-config" content="browserconfig.xml">
+
+<!-- Android Chrome App Install -->
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" sizes="192x192" href="icon-192.png">
+<link rel="icon" sizes="512x512" href="icon-512.png">
+
+<!-- Open Graph (Social Media) -->
+<meta property="og:title" content="Gravity Assist">
+<meta property="og:description" content="Control gravity fields, collect targets, avoid obstacles.">
+<meta property="og:image" content="icon-512.png">
+<meta property="og:type" content="website">
+
+<!-- Electron / Desktop App Detection -->
+<meta name="application-name" content="Gravity Assist">
+
+<!-- Stylesheet -->
+<link rel="stylesheet" href="css/style.css">
 
 </head>
 <body>
