@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Gravity Painter</title>
+<style>
+body { margin:0; overflow:hidden; background:black; }
+canvas { display:block; }
+#ui {
+  position:absolute;
+  top:10px; left:10px;
+  color:white;
+  font-family:sans-serif;
+  font-size:18px;
+}
+</style>
+</head>
+<body>
+<div id="ui">
+Score: <span id="score">0</span><br>
+Move mouse to control gravity field. Avoid red repulsors!
+</div>
+<canvas id="c"></canvas>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const scoreEl = document.getElementById('score');
+
+function resize(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
+window.addEventListener('resize',resize);
+resize();
+
+// Particle controlled by gravity field
+let particle = { x: canvas.width/2, y: canvas.height/2, vx:0, vy:0, color:'white', radius:12 };
+
+// Mouse gravity field
+let mouse = { x: canvas.width/2, y: canvas.height/2 };
+window.addEventListener('mousemove', e => { mouse.x=e.clientX; mouse.y=e.clientY; });
+
+// Targets and repulsors
+let targets = [];
+let repulsors = [];
+let score = 0;
+const numTargets = 6;
+const numRepulsors = 3;
+
+// Initialize targets
+function spawnTargets(){
+  targets=[];
+  for(let i=0;i<numTargets;i++){
+    targets.push({
+      x:Math.random()*canvas.width,
+      y:Math.random()*canvas.height,
+      color:`hsl(${Math.random()*360},80%,60%)`,
+      radius:14
+    });
+  }
+}
+
+// Initialize repulsors
+function spawnRepulsors(){
+  repulsors=[];
+  for(let i=0;i<numRepulsors;i++){
+    repulsors.push({
+      x:Math.random()*canvas.width,
+      y:Math.random()*canvas.height,
+      radius:30
+    });
+  }
+}
+
+spawnTargets();
+spawnRepulsors();
+
+// Draw functions
+function drawParticle(){
+  ctx.fillStyle=particle.color;
+  ctx.beginPath();
+  ctx.arc(particle.x,particle.y,particle.radius,0,Math.PI*2);
+  ctx.fill();
+}
+
+function drawTargets(){
+  targets.forEach(t=>{
+    ctx.fillStyle=t.color;
+    ctx.beginPath();
+    ctx.arc(t.x,t.y,t.radius,0,Math.PI*2);
+    ctx.fill();
+  });
+}
+
+function drawRepulsors(){
+  ctx.strokeStyle='rgba(255,0,0,0.6)';
+  ctx.lineWidth=3;
+  repulsors.forEach(r=>{
+    ctx.beginPath();
+    ctx.arc(r.x,r.y,r.radius,0,Math.PI*2);
+    ctx.stroke();
+  });
+}
+
+function drawGravityCursor(){
+  ctx.strokeStyle='rgba(255,255,255,0.5)';
+  ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.arc(mouse.x,mouse.y,20,0,Math.PI*2);
+  ctx.stroke();
+}
+
+// Update particle physics
+function updateParticle(){
+  // Gravity pull toward mouse
+  let dx = mouse.x - particle.x;
+  let dy = mouse.y - particle.y;
+  let dist = Math.sqrt(dx*dx+dy*dy);
+  let force = Math.min(dist/200,0.5);
+  particle.vx += dx*0.02*force;
+  particle.vy += dy*0.02*force;
+
+  // Repulsor push
+  repulsors.forEach(r=>{
+    let dxr = particle.x - r.x;
+    let dyr = particle.y - r.y;
+    let d = Math.sqrt(dxr*dxr + dyr*dyr);
+    if(d < r.radius + particle.radius){
+      particle.vx += dxr*0.05;
+      particle.vy += dyr*0.05;
+    }
+  });
+
+  // Friction
+  particle.vx *= 0.92;
+  particle.vy *= 0.92;
+
+  particle.x += particle.vx;
+  particle.y += particle.vy;
+
+  // Wrap edges
+  if(particle.x<0) particle.x=canvas.width;
+  if(particle.x>canvas.width) particle.x=0;
+  if(particle.y<0) particle.y=canvas.height;
+  if(particle.y>canvas.height) particle.y=0;
+}
+
+// Collision with targets
+function checkTargets(){
+  targets.forEach(t=>{
+    let dx = particle.x - t.x;
+    let dy = particle.y - t.y;
+    let d = Math.sqrt(dx*dx+dy*dy);
+    if(d < particle.radius + t.radius){
+      particle.color = t.color;
+      score++;
+      scoreEl.innerText = score;
+      t.x = Math.random()*canvas.width;
+      t.y = Math.random()*canvas.height;
+      t.color = `hsl(${Math.random()*360},80%,60%)`;
+    }
+  });
+}
+
+// Animation loop
+function animate(){
+  // Trail effect
+  ctx.globalCompositeOperation='source-over';
+  ctx.fillStyle='rgba(0,0,0,0.15)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  ctx.globalCompositeOperation='lighter';
+
+  updateParticle();
+  checkTargets();
+  drawParticle();
+  drawTargets();
+  drawRepulsors();
+  drawGravityCursor();
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+</body>
+</html>
