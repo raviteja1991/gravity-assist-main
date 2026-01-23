@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Gravity Assist v4</title>
+<title>Gravity Assist v5</title>
 <style>
 body { margin:0; overflow:hidden; background:black; font-family:sans-serif; }
 canvas { display:block; }
@@ -43,7 +43,7 @@ let targets=[], numTargets=5;
 // Obstacles (red circles)
 let obstacles=[], numObstacles=3;
 
-// Boosters
+// Boosters (big triangles)
 let boosterList=[], numBoosters=2;
 
 // Monster
@@ -84,7 +84,7 @@ function spawnBoosters(){
         boosterList.push({
             x: W + Math.random()*W*4,
             y: Math.random()*H,
-            radius:16, // BIGGER BOOSTER
+            radius:16, // Bigger triangle
             color:'magenta'
         });
     }
@@ -93,7 +93,7 @@ function spawnBoosters(){
 // Initialize monsters
 function spawnMonsters(){
     monsters=[];
-    if(level>=3){
+    if(level>=3){ // appear from level 3
         monsters.push({
             x: W + 300,
             y: Math.random()*(H-100)+50,
@@ -102,6 +102,11 @@ function spawnMonsters(){
         });
     }
 }
+
+spawnTargets();
+spawnObstacles();
+spawnBoosters();
+spawnMonsters();
 
 // Firework particle
 function createFirework(x,y,intensity){
@@ -216,7 +221,7 @@ function updatePlayer(){
 // Update world
 function updateWorld(){
     targets.forEach(t=> t.x -= scrollSpeed);
-    obstacles.forEach(o=> t=o?o.x-=scrollSpeed:0);
+    obstacles.forEach(o=> o.x -= scrollSpeed);
     boosterList.forEach(b=> b.x -= scrollSpeed);
     monsters.forEach(m=> m.x += m.vx);
 
@@ -250,9 +255,8 @@ function checkCollisions(){
             if(player.boosters>0){
                 player.boosters--;
                 boostersEl.innerText = player.boosters;
-                // destroy obstacle and trigger firework
                 createFirework(o.x,o.y, Math.ceil(o.radius/10));
-                player.score += Math.ceil(o.radius/10); // points based on size
+                player.score += Math.ceil(o.radius/10);
                 scoreEl.innerText = player.score;
                 o.x=W+Math.random()*W;
                 o.y=Math.random()*H;
@@ -285,10 +289,10 @@ function checkCollisions(){
             if(player.boosters>=3){
                 player.boosters-=3;
                 boostersEl.innerText=player.boosters;
-                createFirework(m.x,m.y,5); // big firework
-                player.score += 5; // points based on monster size
+                createFirework(m.x,m.y,5); // big fireworks
+                player.score += 5;
                 scoreEl.innerText = player.score;
-                m.x=W + Math.random()*W; 
+                m.x=W + Math.random()*W;
                 m.y=Math.random()*H;
             } else {
                 player.score = Math.max(0,player.score-5);
