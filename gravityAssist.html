@@ -2,23 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Gravity Assist v2</title>
+<title>Gravity Assist v3</title>
 <style>
 body { margin:0; overflow:hidden; background:black; font-family:sans-serif; }
 canvas { display:block; }
-#ui {
-  position:absolute; top:10px; left:10px; color:white;
-}
+#ui { position:absolute; top:10px; left:10px; color:white; }
 </style>
 </head>
 <body>
-<div id="ui">Score: <span id="score">0</span> | Level: <span id="level">1</span></div>
+<div id="ui">
+Score: <span id="score">0</span> | Level: <span id="level">1</span> | Boosters: <span id="boosters">0</span>
+</div>
 <canvas id="c"></canvas>
 <script>
 const canvas=document.getElementById('c');
 const ctx=canvas.getContext('2d');
 const scoreEl=document.getElementById('score');
 const levelEl=document.getElementById('level');
+const boostersEl=document.getElementById('boosters');
 
 let W,H;
 function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
@@ -26,24 +27,29 @@ window.addEventListener('resize',resize);
 resize();
 
 // Player
-let player={x:100, y:H/2, vx:0, vy:0, color:'cyan', radius:12, score:0};
+let player={x:100, y:H/2, vx:0, vy:0, color:'cyan', radius:12, score:0, boosters:0};
 
-// Gravity field controlled by mouse
+// Mouse gravity
 let mouse={x:player.x, y:player.y};
 window.addEventListener('mousemove', e=>{ mouse.x=e.clientX; mouse.y=e.clientY; });
 
-// Side-scrolling world
+// Side-scrolling
 let scrollSpeed=2;
 let level=1;
 
-// Targets (points to collect)
-let targets=[];
-let numTargets=5;
+// Targets
+let targets=[], numTargets=5;
 
-// Obstacles (repulsors / enemies)
-let obstacles=[];
-let numObstacles=3;
+// Obstacles (red circles)
+let obstacles=[], numObstacles=3;
 
+// Boosters
+let boosterList=[], numBoosters=2;
+
+// Monster
+let monsters=[];
+
+// Initialize targets
 function spawnTargets(){
     targets=[];
     for(let i=0;i<numTargets;i++){
@@ -56,6 +62,7 @@ function spawnTargets(){
     }
 }
 
+// Initialize obstacles
 function spawnObstacles(){
     obstacles=[];
     for(let i=0;i<numObstacles;i++){
@@ -67,14 +74,42 @@ function spawnObstacles(){
     }
 }
 
+// Initialize boosters
+function spawnBoosters(){
+    boosterList=[];
+    for(let i=0;i<numBoosters;i++){
+        boosterList.push({
+            x: W + Math.random()*W*4,
+            y: Math.random()*H,
+            radius:8,
+            color:'magenta'
+        });
+    }
+}
+
+// Initialize monsters
+function spawnMonsters(){
+    monsters=[];
+    if(level>=3){ // Monster appears from level 3
+        monsters.push({
+            x: W + 300,
+            y: Math.random()*(H-100)+50,
+            radius:30,
+            vx:-1.5
+        });
+    }
+}
+
 spawnTargets();
 spawnObstacles();
+spawnBoosters();
+spawnMonsters();
 
-// Draw functions
+// Draw
 function drawPlayer(){
     ctx.fillStyle=player.color;
     ctx.beginPath();
-    ctx.arc(player.x, player.y, player.radius,0,Math.PI*2);
+    ctx.arc(player.x,player.y,player.radius,0,Math.PI*2);
     ctx.fill();
 }
 
@@ -82,7 +117,7 @@ function drawTargets(){
     targets.forEach(t=>{
         ctx.fillStyle=t.color;
         ctx.beginPath();
-        ctx.arc(t.x, t.y, t.radius,0,Math.PI*2);
+        ctx.arc(t.x,t.y,t.radius,0,Math.PI*2);
         ctx.fill();
     });
 }
@@ -92,9 +127,46 @@ function drawObstacles(){
     ctx.lineWidth=3;
     obstacles.forEach(o=>{
         ctx.beginPath();
-        ctx.arc(o.x, o.y, o.radius,0,Math.PI*2);
+        ctx.arc(o.x,o.y,o.radius,0,Math.PI*2);
         ctx.stroke();
     });
+}
+
+function drawBoosters(){
+    boosterList.forEach(b=>{
+        ctx.fillStyle=b.color;
+        ctx.beginPath();
+        // draw as triangle
+        ctx.moveTo(b.x, b.y - b.radius);
+        ctx.lineTo(b.x - b.radius, b.y + b.radius);
+        ctx.lineTo(b.x + b.radius, b.y + b.radius);
+        ctx.closePath();
+        ctx.fill();
+    });
+}
+
+function drawMonsters(){
+    monsters.forEach(m=>{
+        ctx.fillStyle='darkred';
+        ctx.beginPath();
+        ctx.arc(m.x,m.y,m.radius,0,Math.PI*2);
+        ctx.fill();
+    });
+}
+
+// Trail
+let trail=[];
+function drawTrail(){
+    trail.push({x:player.x, y:player.y, color:player.color});
+    if(trail.length>100) trail.shift();
+    trail.forEach((p,i)=>{
+        ctx.fillStyle=p.color;
+        ctx.globalAlpha = i/trail.length*0.6;
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,5,0,Math.PI*2);
+        ctx.fill();
+    });
+    ctx.globalAlpha=1;
 }
 
 // Update
@@ -112,48 +184,86 @@ function updatePlayer(){
     if(player.y>H) player.y=H;
 }
 
+// Update world
 function updateWorld(){
-    // Move targets and obstacles left
     targets.forEach(t=> t.x -= scrollSpeed);
     obstacles.forEach(o=> o.x -= scrollSpeed);
+    boosterList.forEach(b=> b.x -= scrollSpeed);
+    monsters.forEach(m=> m.x += m.vx); // monster moves left
 
-    // Recycle targets & obstacles
-    targets.forEach(t=>{ if(t.x<-50){ t.x=W + Math.random()*W; t.y=Math.random()*H; t.color=`hsl(${Math.random()*360},80%,60%)`; }});
-    obstacles.forEach(o=>{ if(o.x<-50){ o.x=W + Math.random()*W; o.y=Math.random()*H; }});
+    // recycle targets
+    targets.forEach(t=>{ if(t.x<-50){ t.x=W+Math.random()*W; t.y=Math.random()*H; t.color=`hsl(${Math.random()*360},80%,60%)`; }});
+    obstacles.forEach(o=>{ if(o.x<-50){ o.x=W+Math.random()*W; o.y=Math.random()*H; }});
+    boosterList.forEach(b=>{ if(b.x<-50){ b.x=W+Math.random()*W*2; b.y=Math.random()*H; }});
+    monsters.forEach(m=>{ if(m.x<-50){ m.x=W+Math.random()*W; m.y=Math.random()*H; }});
 }
 
-// Collision
+// Collisions
 function checkCollisions(){
+    // Targets
     targets.forEach(t=>{
-        let dx=player.x-t.x;
-        let dy=player.y-t.y;
+        let dx=player.x-t.x, dy=player.y-t.y;
         let d=Math.sqrt(dx*dx+dy*dy);
         if(d<player.radius+t.radius){
             player.color=t.color;
             player.score++;
-            scoreEl.innerText=player.score;
-            // push target ahead to recycle
+            scoreEl.innerText = player.score;
             t.x=W + Math.random()*W;
             t.y=Math.random()*H;
             t.color=`hsl(${Math.random()*360},80%,60%)`;
         }
     });
 
+    // Obstacles
     obstacles.forEach(o=>{
-        let dx=player.x-o.x;
-        let dy=player.y-o.y;
+        let dx=player.x-o.x, dy=player.y-o.y;
         let d=Math.sqrt(dx*dx+dy*dy);
         if(d<player.radius+o.radius){
-            // hit obstacle → lose score, reset player slightly
-            player.score = Math.max(0, player.score-2);
-            scoreEl.innerText=player.score;
-            player.x = 100;
-            player.y = H/2;
+            if(player.boosters>0){
+                player.boosters--;
+                boostersEl.innerText = player.boosters;
+                o.x=W+Math.random()*W; // destroy obstacle
+            } else {
+                player.score = Math.max(0,player.score-2);
+                scoreEl.innerText=player.score;
+                player.x=100;
+                player.y=H/2;
+            }
+        }
+    });
+
+    // Boosters
+    boosterList.forEach(b=>{
+        let dx=player.x-b.x, dy=player.y-b.y;
+        let d=Math.sqrt(dx*dx+dy*dy);
+        if(d<player.radius+b.radius){
+            player.boosters++;
+            boostersEl.innerText=player.boosters;
+            b.x=W+Math.random()*W*2;
+            b.y=Math.random()*H;
+        }
+    });
+
+    // Monsters
+    monsters.forEach(m=>{
+        let dx=player.x-m.x, dy=player.y-m.y;
+        let d=Math.sqrt(dx*dx+dy*dy);
+        if(d<player.radius+m.radius){
+            if(player.boosters>=3){ // need 3 boosters to destroy monster
+                player.boosters -=3;
+                boostersEl.innerText=player.boosters;
+                m.x=W + Math.random()*W; // destroy monster
+            } else {
+                player.score = Math.max(0,player.score-5);
+                scoreEl.innerText = player.score;
+                player.x=100;
+                player.y=H/2;
+            }
         }
     });
 }
 
-// Level system
+// Level
 function checkLevel(){
     let newLevel = Math.floor(player.score/10)+1;
     if(newLevel>level){
@@ -163,23 +273,10 @@ function checkLevel(){
         numObstacles+=1;
         spawnTargets();
         spawnObstacles();
+        spawnBoosters();
+        spawnMonsters();
         levelEl.innerText = level;
     }
-}
-
-// Trail
-let trail = [];
-function drawTrail(){
-    trail.push({x:player.x, y:player.y, color:player.color});
-    if(trail.length>100) trail.shift();
-    trail.forEach((p,i)=>{
-        ctx.fillStyle=p.color;
-        ctx.globalAlpha = i/trail.length*0.6;
-        ctx.beginPath();
-        ctx.arc(p.x,p.y,5,0,Math.PI*2);
-        ctx.fill();
-    });
-    ctx.globalAlpha=1;
 }
 
 // Animate
@@ -195,6 +292,8 @@ function animate(){
     drawTrail();
     drawTargets();
     drawObstacles();
+    drawBoosters();
+    drawMonsters();
     drawPlayer();
 
     requestAnimationFrame(animate);
