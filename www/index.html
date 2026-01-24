@@ -78,6 +78,12 @@ Score: <span id="score">0</span> | Level: <span id="level">1</span> | Boosters: 
 <script src="js/collisions.js"></script>
 <script src="js/main.js"></script>
 <script src="js/version.js"></script>
-
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('Service Worker registered'))
+      .catch((err) => console.error('Service Worker failed:', err));
+  }
+</script>
 </body>
 </html>
