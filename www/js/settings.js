@@ -27,6 +27,12 @@
   if (!GRADES.includes(savedGrade)) savedGrade = 'none';
   window.bgGrade = savedGrade;
 
+  // Trails setting (default: enabled)
+  const TRAIL_KEY = 'gravity-trails-enabled';
+  let savedTrail = localStorage.getItem(TRAIL_KEY);
+  if (savedTrail === null) savedTrail = 'true';
+  window.trailsEnabled = (savedTrail === 'true');
+
   function open(){
     settingsModal.style.display = 'block';
     // set radio checked state
@@ -71,6 +77,14 @@
   gradeEl.addEventListener('change', (e)=>{
     window.bgGrade = e.target.value;
     localStorage.setItem(GRADE_KEY, window.bgGrade);
+  });
+
+  // Trail toggle control
+  const trailToggle = document.getElementById('trail-toggle');
+  if (trailToggle) trailToggle.checked = !!window.trailsEnabled;
+  trailToggle && trailToggle.addEventListener('change', (e)=>{
+    window.trailsEnabled = !!e.target.checked;
+    localStorage.setItem(TRAIL_KEY, window.trailsEnabled ? 'true' : 'false');
   });
 
 })();

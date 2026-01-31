@@ -98,32 +98,33 @@ function checkLevel(){
 function drawBackground(mode){
     const mult = window.bgBrightness || 1;
     const alpha = (v) => Math.min(1, v * mult);
+    const A = (v) => (window.trailsEnabled ? alpha(v) : 1);
 
-    // Default small fade to preserve trail visibility
+    // Default small fade to preserve trail visibility (disabled => full clear)
     switch(mode){
       case 'black':
-        ctx.fillStyle = `rgba(0,0,0,${alpha(0.2)})`;
+        ctx.fillStyle = `rgba(0,0,0,${A(0.2)})`;
         ctx.fillRect(0,0,W,H);
         break;
       case 'sky': {
         const bg = ctx.createRadialGradient(W*0.2, H*0.15, 0, W*0.2, H*0.15, Math.max(W,H)*0.9);
-        bg.addColorStop(0, `rgba(31,182,255,${alpha(0.12)})`);
-        bg.addColorStop(0.35, `rgba(123,47,247,${alpha(0.06)})`);
-        bg.addColorStop(1, `rgba(0,0,0,${alpha(0.16)})`);
+        bg.addColorStop(0, `rgba(31,182,255,${A(0.12)})`);
+        bg.addColorStop(0.35, `rgba(123,47,247,${A(0.06)})`);
+        bg.addColorStop(1, `rgba(0,0,0,${A(0.16)})`);
         ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
       } break;
       case 'purple': {
         const bg = ctx.createRadialGradient(W*0.25, H*0.2, 0, W*0.25, H*0.2, Math.max(W,H)*0.9);
-        bg.addColorStop(0, `rgba(95,62,150,${alpha(0.12)})`);
-        bg.addColorStop(0.5, `rgba(31,182,255,${alpha(0.06)})`);
-        bg.addColorStop(1, `rgba(0,0,0,${alpha(0.16)})`);
+        bg.addColorStop(0, `rgba(95,62,150,${A(0.12)})`);
+        bg.addColorStop(0.5, `rgba(31,182,255,${A(0.06)})`);
+        bg.addColorStop(1, `rgba(0,0,0,${A(0.16)})`);
         ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
       } break;
       case 'ocean': {
         const lg = ctx.createLinearGradient(0,0,0,H);
-        lg.addColorStop(0, `rgba(31,182,255,${alpha(0.10)})`);
-        lg.addColorStop(0.6, `rgba(8,50,62,${alpha(0.08)})`);
-        lg.addColorStop(1, `rgba(0,0,0,${alpha(0.16)})`);
+        lg.addColorStop(0, `rgba(31,182,255,${A(0.10)})`);
+        lg.addColorStop(0.6, `rgba(8,50,62,${A(0.08)})`);
+        lg.addColorStop(1, `rgba(0,0,0,${A(0.16)})`);
         ctx.fillStyle = lg; ctx.fillRect(0,0,W,H);
       } break;
       case 'white': {
@@ -134,9 +135,9 @@ function drawBackground(mode){
       case 'dusk':
       default: {
         const bg = ctx.createRadialGradient(W*0.25, H*0.1, 0, W*0.25, H*0.1, Math.max(W,H)*0.8);
-        bg.addColorStop(0, `rgba(255,200,170,${alpha(0.08)})`);
-        bg.addColorStop(0.5, `rgba(80,50,120,${alpha(0.06)})`);
-        bg.addColorStop(1, `rgba(0,0,0,${alpha(0.12)})`);
+        bg.addColorStop(0, `rgba(255,200,170,${A(0.08)})`);
+        bg.addColorStop(0.5, `rgba(80,50,120,${A(0.06)})`);
+        bg.addColorStop(1, `rgba(0,0,0,${A(0.12)})`);
         ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
       }
     }
