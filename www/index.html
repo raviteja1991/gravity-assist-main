@@ -62,6 +62,9 @@ Score: <span id="score">0</span> | Level: <span id="level">1</span> | Boosters: 
 <!-- Version label -->
 <div id="version-label">v5.0</div>
 
+<!-- Settings button -->
+<div id="settings-btn" class="settings-btn" title="Settings">⚙</div>
+
 <!-- Version modal -->
 <div id="version-modal" class="modal">
   <div class="modal-content">
@@ -71,10 +74,42 @@ Score: <span id="score">0</span> | Level: <span id="level">1</span> | Boosters: 
   </div>
 </div>
 
+<!-- Settings modal -->
+<div id="settings-modal" class="modal">
+  <div class="modal-content settings-content">
+    <span class="close-settings close-btn">&times;</span>
+    <h3>Background</h3>
+    <div id="bg-options">
+      <label><input type="radio" name="bg" value="black"> Classic Black</label><br>
+      <label><input type="radio" name="bg" value="sky"> Sky Gradient</label><br>
+      <label><input type="radio" name="bg" value="purple"> Purple Glow</label><br>
+      <label><input type="radio" name="bg" value="ocean"> Ocean Fade</label><br>
+      <label><input type="radio" name="bg" value="white"> Soft White</label><br>
+      <label><input type="radio" name="bg" value="dusk"> Dusk (soft warm)</label>
+    </div>
+
+    <hr>
+    <div class="setting-row">
+      <label for="bg-brightness">Brightness: <span id="bg-brightness-value">100%</span></label>
+      <input id="bg-brightness" type="range" min="50" max="150" step="1" value="100">
+    </div>
+    <div class="setting-row">
+      <label for="bg-grade">Color Grade:</label>
+      <select id="bg-grade">
+        <option value="none">None</option>
+        <option value="warm">Warm</option>
+        <option value="cool">Cool</option>
+        <option value="desat">Desaturate</option>
+      </select>
+    </div>
+  </div>
+</div>
+
 <script src="js/spawn.js"></script>
 <script src="js/draw.js"></script>
 <script src="js/update.js"></script>
 <script src="js/collisions.js"></script>
+<script src="js/settings.js"></script>
 <script src="js/main.js"></script>
 <script src="js/version.js"></script>
 <script>

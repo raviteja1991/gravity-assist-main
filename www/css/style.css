@@ -1,9 +1,17 @@
+:root {
+  --brand-blue: #1fb6ff;
+  --brand-purple: #7b2ff7;
+}
+
 body {
   margin: 0;
   overflow: hidden;
-  background: black;
+  /* Sky-blue-tinted background inspired by the app icons */
+  background: radial-gradient(circle at 20% 20%, var(--brand-blue) 0%, rgba(11,27,48,0.85) 45%, #000000 100%);
+  background-color: #aed2e2; /* fallback */
   font-family: sans-serif;
   touch-action: none;
+  color: #fff;
 }
 
 canvas {
@@ -15,11 +23,18 @@ canvas {
   top: 10px;
   left: 10px;
   color: white;
+  background-color: rgba(0, 0, 0, 0.6); /* match version/settings */
+  padding: 6px 10px;
+  border-radius: 6px;
+  z-index: 9999;
+  opacity: 0.6;
+  font-weight: 600;
+  pointer-events: none; /* visually present but not clickable */
 }
 /* Version label styling */
 #version-label {
     position: fixed;
-    bottom: 5px;
+    top: 10px;
     right: 5px;
     background-color: rgba(0, 0, 0, 0.6);
     color: white;
@@ -33,7 +48,38 @@ canvas {
 }
 #version-label:hover {
     opacity: 1;
+} 
+
+/* Settings button */
+.settings-btn {
+    position: fixed;
+    top: 10px;
+    right: 60px; /* sits left of the version label */
+    background-color: rgba(0,0,0,0.6);
+    color: white;
+    padding: 4px 8px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 9999;
+    opacity: 0.5;
+    transition: opacity 0.3s;
 }
+.settings-btn:hover { opacity: 1; }
+
+/* Settings specific modal tweaks */
+.settings-content {
+    width: 320px;
+}
+#bg-options { text-align: left; margin-top: 10px; }
+#bg-options label { display:block; margin:6px 0; color: #000; }
+
+/* Settings control rows */
+.setting-row { margin-top: 12px; text-align: left; }
+.setting-row label { display: block; margin-bottom: 6px; color: #111; font-weight: 500; }
+.setting-row input[type=range] { width: 100%; }
+.setting-row select { width: 100%; padding: 6px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.08); }
+#bg-brightness-value { font-weight: 600; margin-left: 8px; }
 
 /* Modal overlay */
 .modal {
