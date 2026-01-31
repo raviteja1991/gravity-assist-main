@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <radialGradient id="g" cx="30%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#7b2ff7" />
+      <stop offset="100%" stop-color="#1fb6ff" />
+    </radialGradient>
+  </defs>
+  <rect width="100%" height="100%" rx="32" fill="url(#g)" />
+
+  <!-- Orbital rings -->
+  <g stroke="rgba(255,255,255,0.18)" stroke-width="6" fill="none">
+    <ellipse cx="128" cy="128" rx="76" ry="76" transform="rotate(24 128 128)" />
+    <ellipse cx="128" cy="128" rx="44" ry="44" transform="rotate(-18 128 128)" />
+  </g>
+
+  <!-- Particle (white) -->
+  <circle cx="176" cy="96" r="10" fill="#fff" />
+
+  <!-- Subtle glow -->
+  <circle cx="176" cy="96" r="20" fill="rgba(255,255,255,0.08)" />
+
+  <!-- Small details -->
+  <circle cx="92" cy="164" r="4" fill="#fff" opacity="0.9" />
+</svg>

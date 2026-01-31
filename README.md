@@ -60,6 +60,20 @@ No libraries, no build steps — just open `index.html` and play.
 npx http-server www
 ```
 
+### 🖼️ Icons & screenshots
+SVG placeholders have been added to `www/icons/` for all PWA icon sizes and two app screenshots (`screenshot-540x720.svg` and `screenshot-1280x720.svg`). If you need raster (PNG) versions for older platforms you can generate them locally:
+
+1. Install dev dependency (optional):
+```bash
+npm install --save-dev puppeteer
+```
+2. Run the provided script to render all `*.svg` to `*.png`:
+```bash
+node scripts/generate-pngs.js
+```
+
+This will write PNG files into `www/icons/` next to the SVGs. (Rendering requires `puppeteer` and may download a Chromium binary.)
+
 ---
 
 ## 📁 Project Structure

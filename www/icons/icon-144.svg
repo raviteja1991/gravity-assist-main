@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Gravity Assist icon (144x144) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="144" height="144">
+  <defs>
+    <radialGradient id="g144" cx="30%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#7b2ff7" />
+      <stop offset="100%" stop-color="#1fb6ff" />
+    </radialGradient>
+  </defs>
+  <rect width="100%" height="100%" rx="28" fill="url(#g144)" />
+  <g stroke="rgba(255,255,255,0.18)" stroke-width="6" fill="none">
+    <ellipse cx="128" cy="128" rx="80" ry="80" transform="rotate(24 128 128)" />
+    <ellipse cx="128" cy="128" rx="48" ry="48" transform="rotate(-18 128 128)" />
+  </g>
+  <circle cx="176" cy="96" r="10" fill="#fff" />
+</svg>
