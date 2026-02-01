@@ -69,17 +69,68 @@ canvas {
 
 /* Settings specific modal tweaks */
 .settings-content {
-    width: 320px;
+    width: 480px;
+    max-width: calc(100% - 40px);
+    /* Softer, slightly translucent background so backdrop-filter is visible */
+    background: linear-gradient(180deg, rgba(20,28,40,0.9), rgba(14,18,24,0.85));
+    color: #f6fbff; /* brighter text for improved legibility */
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 12px 30px rgba(3,6,12,0.75), inset 0 1px 0 rgba(255,255,255,0.02);
+    -webkit-backdrop-filter: blur(6px); /* Safari/iOS support */
+    backdrop-filter: blur(6px); /* subtle frosted effect */
 }
-#bg-options { text-align: left; margin-top: 10px; }
-#bg-options label { display:block; margin:6px 0; color: #000; }
+#bg-options { margin-top: 10px; }
+#bg-options .swatch-label { display:inline-block; margin:6px; color: #000; }
+#bg-options label { color: inherit; }
+
+/* Improve heading & label contrast inside modal */
+.settings-content h2, .settings-content h3 { color: #ffffff; margin: 0 0 8px 0; }
+.setting-row label { color: #dfefff; }
+.section-desc { color: #bcd6ef; }
 
 /* Settings control rows */
 .setting-row { margin-top: 12px; text-align: left; }
-.setting-row label { display: block; margin-bottom: 6px; color: #111; font-weight: 500; }
+.setting-row label { display: block; margin-bottom: 6px; color: #cdd9ea; font-weight: 600; }
 .setting-row input[type=range] { width: 100%; }
-.setting-row select { width: 100%; padding: 6px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.08); }
-#bg-brightness-value { font-weight: 600; margin-left: 8px; }
+.setting-row select { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); color: #e6eef8; }
+#bg-brightness-value { font-weight: 700; margin-left: 8px; color:#dff0ff; }
+
+/* Small section helper */
+.section-desc { color: #aebfd6; margin-top: 6px; margin-bottom: 8px; font-size: 13px; }
+
+/* Swatch grid for presets */
+.swatch-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(92px,1fr)); gap: 10px; align-items: center; margin-top: 8px; }
+.swatch-label, .pointer-label { display: inline-flex; align-items:center; justify-content:center; cursor: pointer; }
+.swatch-label input, .pointer-label input { position: absolute; opacity: 0; pointer-events: none; }
+
+.swatch, .pointer-swatch { width: 92px; height: 52px; border-radius: 10px; box-shadow: 0 3px 10px rgba(2,6,12,0.6); border: 2px solid rgba(255,255,255,0.04); transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease; display:block; }
+
+/* Background preset visuals */
+.swatch.black { background: linear-gradient(180deg, #000000 0%, #111 100%); }
+.swatch.sky { background: linear-gradient(180deg, #8fd3ff 0%, #08182a 100%); }
+.swatch.purple { background: linear-gradient(180deg, #b28bff 0%, #2b0b42 100%); }
+.swatch.ocean { background: linear-gradient(180deg, #9be0ff 0%, #00354b 100%); }
+.swatch.white { background: linear-gradient(180deg, #ffffff 0%, #f0f6fb 100%); }
+.swatch.dusk { background: linear-gradient(180deg, #ffd7b5 0%, #3b1823 100%); }
+
+/* Selected & focus states */
+.swatch-label input:checked + .swatch, .pointer-label input:checked + .pointer-swatch { transform: translateY(-3px) scale(1.02); box-shadow: 0 8px 18px rgba(0,0,0,0.6), 0 0 0 3px rgba(31,182,255,0.08); border-color: rgba(31,182,255,0.9); }
+.swatch-label:focus, .swatch-label:focus-within, .pointer-label:focus, .pointer-label:focus-within { outline: 3px solid rgba(31,182,255,0.06); border-radius: 10px; }
+
+/* Pointer swatch visuals (simple shapes) */
+.pointer-swatch { display:flex; align-items:center; justify-content:center; height:52px; }
+.pointer-swatch.dot::before { content:''; width:18px; height:18px; background: #fff; border-radius:50%; box-shadow: 0 2px 6px rgba(0,0,0,0.5); }
+.pointer-swatch.ring::before { content:''; width:22px; height:22px; border-radius:50%; box-shadow: 0 0 0 4px rgba(255,255,255,0.12) inset; border:2px solid rgba(255,255,255,0.95); background:transparent; }
+.pointer-swatch.crosshair::before { content:''; width:24px; height:24px; background-image: linear-gradient(90deg,#fff 0 40%, transparent 40% 60%, #fff 60%), linear-gradient(#fff,#fff); background-size:100% 2px,2px 100%; background-position:center; background-repeat:no-repeat; }
+.pointer-swatch.triangle::before { content:''; width:0; height:0; border-left:10px solid transparent; border-right:10px solid transparent; border-bottom:18px solid #fff; transform: translateY(-4px); }
+.pointer-swatch.plus::before { content:''; width:18px; height:18px; background: linear-gradient(#fff 0 40%, transparent 40% 60%, #fff 60%), linear-gradient(90deg,#fff,#fff); background-size:100% 3px,3px 100%; background-position:center; background-repeat:no-repeat; }
+
+/* Responsive tweaks */
+@media (max-width:520px){ .swatch, .pointer-swatch { width: 100%; height:48px; } .swatch-grid { grid-template-columns: repeat(2,1fr); } }
+
+
 
 /* Modal overlay */
 .modal {
@@ -96,26 +147,27 @@ canvas {
 
 /* Modal content box */
 .modal-content {
-    background-color: #fff;
-    color: #000; /* ensure text is visible on white background */
-    margin: 15% auto; /* centered vertically & horizontally */
-    padding: 20px;
-    border-radius: 8px;
-    width: 250px;
-    text-align: center;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    background: linear-gradient(180deg, rgba(12,18,26,0.98), rgba(7,10,14,0.96));
+    color: #e6eef8;
+    margin: 8% auto; /* centered vertically & horizontally */
+    padding: 18px;
+    border-radius: 12px;
+    width: 480px;
+    max-width: calc(100% - 40px);
+    text-align: left;
+    box-shadow: 0 12px 30px rgba(3,6,12,0.75), 0 2px 6px rgba(0,0,0,0.5) inset;
 }
 
 /* Close button */
 .close-btn {
-    color: #aaa;
+    color: #cbd6e8;
     float: right;
     font-size: 20px;
     font-weight: bold;
     cursor: pointer;
 }
 .close-btn:hover {
-    color: black;
+    color: #ffffff;
 }
 /* Button styles */
 button {    

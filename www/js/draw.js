@@ -79,3 +79,48 @@ function drawTrail(){
     });
     ctx.globalAlpha=1;
 }
+
+// Draw custom pointer shapes (based on user's selection)
+function drawPointer(){
+    const shape = window.pointerShape || 'dot';
+    const x = (mouse && mouse.x) || player.x;
+    const y = (mouse && mouse.y) || player.y;
+    ctx.save();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = player.color;
+    ctx.fillStyle = player.color;
+    ctx.globalAlpha = 0.95;
+
+    switch(shape){
+        case 'dot':
+            ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2); ctx.fill();
+            break;
+        case 'ring':
+            ctx.beginPath(); ctx.arc(x,y,10,0,Math.PI*2); ctx.stroke();
+            break;
+        case 'crosshair':
+            ctx.beginPath();
+            ctx.moveTo(x-12,y); ctx.lineTo(x+12,y);
+            ctx.moveTo(x,y-12); ctx.lineTo(x,y+12);
+            ctx.stroke();
+            break;
+        case 'triangle':
+            ctx.beginPath();
+            ctx.moveTo(x,y-10);
+            ctx.lineTo(x-8,y+8);
+            ctx.lineTo(x+8,y+8);
+            ctx.closePath(); ctx.fill();
+            break;
+        case 'plus':
+            ctx.beginPath();
+            ctx.moveTo(x-10,y); ctx.lineTo(x+10,y);
+            ctx.moveTo(x,y-10); ctx.lineTo(x,y+10);
+            ctx.stroke();
+            break;
+        default:
+            // fallback to dot
+            ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2); ctx.fill();
+    }
+
+    ctx.restore();
+}

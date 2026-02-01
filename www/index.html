@@ -76,17 +76,19 @@ Score: <span id="score">0</span> | Level: <span id="level">1</span> | Boosters: 
 
 <!-- Settings modal -->
 <div id="settings-modal" class="modal">
-  <div class="modal-content settings-content">
-    <span class="close-settings close-btn">&times;</span>
-    <h3>Background</h3>
-    <div id="bg-options">
-      <label><input type="radio" name="bg" value="black"> Classic Black</label><br>
-      <label><input type="radio" name="bg" value="sky"> Sky Gradient</label><br>
-      <label><input type="radio" name="bg" value="purple"> Purple Glow</label><br>
-      <label><input type="radio" name="bg" value="ocean"> Ocean Fade</label><br>
-      <label><input type="radio" name="bg" value="white"> Soft White</label><br>
-      <label><input type="radio" name="bg" value="dusk"> Dusk (soft warm)</label>
-    </div>
+  <div class="modal-content settings-content" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <span class="close-settings close-btn" role="button" aria-label="Close">&times;</span>
+    <h2 id="settings-title">Display & Pointer Settings</h2>
+    <p class="section-desc">Choose a background preset. Hover for name.</p>
+    <div id="bg-options" class="swatch-grid" role="radiogroup" aria-label="Background Presets">
+      <label class="swatch-label" title="Classic Black"><input type="radio" name="bg" value="black"><span class="swatch black" aria-hidden="true"></span></label>
+      <label class="swatch-label" title="Sky Gradient"><input type="radio" name="bg" value="sky"><span class="swatch sky" aria-hidden="true"></span></label>
+      <label class="swatch-label" title="Purple Glow"><input type="radio" name="bg" value="purple"><span class="swatch purple" aria-hidden="true"></span></label>
+      <label class="swatch-label" title="Ocean Fade"><input type="radio" name="bg" value="ocean"><span class="swatch ocean" aria-hidden="true"></span></label>
+      <label class="swatch-label" title="Soft White"><input type="radio" name="bg" value="white"><span class="swatch white" aria-hidden="true"></span></label>
+      <label class="swatch-label" title="Dusk (soft warm)"><input type="radio" name="bg" value="dusk"><span class="swatch dusk" aria-hidden="true"></span></label>
+    </div>    
+    <hr>    
 
     <hr>
     <div class="setting-row">
@@ -106,6 +108,17 @@ Score: <span id="score">0</span> | Level: <span id="level">1</span> | Boosters: 
     <hr>
     <div class="setting-row">
       <label><input type="checkbox" id="trail-toggle"> Enable Trails (leave faint trails on background)</label>
+    </div>
+
+    <hr>
+    <h3>Pointer</h3>
+    <p class="section-desc">Select pointer style (system cursor hides when a custom pointer is selected).</p>
+    <div id="pointer-options" class="swatch-grid pointer-grid" role="radiogroup" aria-label="Pointer Style">
+      <label class="pointer-label" title="Dot"><input type="radio" name="pointer" value="dot"><span class="pointer-swatch dot" aria-hidden="true"></span></label>
+      <label class="pointer-label" title="Ring"><input type="radio" name="pointer" value="ring"><span class="pointer-swatch ring" aria-hidden="true"></span></label>
+      <label class="pointer-label" title="Crosshair"><input type="radio" name="pointer" value="crosshair"><span class="pointer-swatch crosshair" aria-hidden="true"></span></label>
+      <label class="pointer-label" title="Triangle"><input type="radio" name="pointer" value="triangle"><span class="pointer-swatch triangle" aria-hidden="true"></span></label>
+      <label class="pointer-label" title="Plus"><input type="radio" name="pointer" value="plus"><span class="pointer-swatch plus" aria-hidden="true"></span></label>
     </div>
   </div>
 </div>

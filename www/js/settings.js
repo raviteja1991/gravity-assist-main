@@ -39,6 +39,15 @@
     const radios = bgOptions.querySelectorAll('input[type=radio]');
     radios.forEach(r => { r.checked = (r.value === window.bgMode); });
 
+    // make swatch labels focusable for keyboard users
+    bgOptions.querySelectorAll('.swatch-label').forEach(l => l.tabIndex = 0);
+    const pointerGroup = document.getElementById('pointer-options');
+    if (pointerGroup) pointerGroup.querySelectorAll('.pointer-label').forEach(l => l.tabIndex = 0);
+
+    // focus the checked swatch for quick keyboard navigation
+    const checkedBg = bgOptions.querySelector('input[type=radio]:checked');
+    if (checkedBg && checkedBg.parentElement) checkedBg.parentElement.focus();
+
     // sync controls
     document.getElementById('bg-brightness').value = Math.round(window.bgBrightness * 100);
     document.getElementById('bg-brightness-value').innerText = Math.round(window.bgBrightness * 100) + '%';
@@ -86,5 +95,35 @@
     window.trailsEnabled = !!e.target.checked;
     localStorage.setItem(TRAIL_KEY, window.trailsEnabled ? 'true' : 'false');
   });
+
+  // Pointer shape (dot, ring, crosshair, triangle, plus)
+  const POINTER_KEY = 'gravity-pointer-shape';
+  const POINTERS = ['dot','ring','crosshair','triangle','plus'];
+  const DEFAULT_POINTER = 'dot';
+  let savedPointer = localStorage.getItem(POINTER_KEY) || DEFAULT_POINTER;
+  if (!POINTERS.includes(savedPointer)) savedPointer = DEFAULT_POINTER;
+  window.pointerShape = savedPointer;
+
+  // Apply initial cursor visibility (hide system cursor when using custom pointer)
+  const canvasEl = document.getElementById('c');
+  if (canvasEl) canvasEl.style.cursor = (window.pointerShape ? 'none' : 'default');
+
+  // Initialize UI and event listeners for pointer options
+  const pointerOptions = document.getElementById('pointer-options');
+  if (pointerOptions){
+    // set radio state
+    const radios = pointerOptions.querySelectorAll('input[type=radio]');
+    radios.forEach(r => { r.checked = (r.value === window.pointerShape); });
+
+    pointerOptions.addEventListener('change', (e)=>{
+      const r = e.target;
+      if(r && r.name === 'pointer'){
+        window.pointerShape = r.value;
+        localStorage.setItem(POINTER_KEY, r.value);
+        // hide system cursor when using custom pointer
+        if (canvasEl) canvasEl.style.cursor = (r.value ? 'none' : 'default');
+      }
+    });
+  }
 
 })();

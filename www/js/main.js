@@ -178,6 +178,9 @@ function animate(){
     drawPlayer();
     drawFireworks();
 
+    // Custom pointer drawn on top of everything
+    if (typeof drawPointer === 'function') drawPointer();
+
     requestAnimationFrame(animate);
 }
 
