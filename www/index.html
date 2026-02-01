@@ -55,12 +55,12 @@
 </head>
 <body>
 <div id="ui">
-Score: <span id="score">0</span> | Level: <span id="level">1</span> | Boosters: <span id="boosters">0</span>
+Score: <span id="score" aria-live="polite">0</span> | Level: <span id="level" aria-live="polite">1</span> | Boosters: <span id="boosters" aria-live="polite">0</span> | Lock: <span id="lock-indicator" aria-live="polite">off</span>
 </div>
 <canvas id="c"></canvas>
 
 <!-- Version label -->
-<div id="version-label">v5.0</div>
+<div id="version-label">v6.0</div>
 
 <!-- Settings button -->
 <div id="settings-btn" class="settings-btn" title="Settings">⚙</div>
@@ -111,6 +111,14 @@ Score: <span id="score">0</span> | Level: <span id="level">1</span> | Boosters: 
     </div>
 
     <hr>
+    <div class="setting-row">
+      <label><input type="checkbox" id="sound-toggle"> Enable Sounds</label>
+    </div>
+    <div class="setting-row">
+      <label><input type="checkbox" id="keyboard-toggle"> Enable Keyboard Control (Arrow keys)</label>
+    </div>
+
+    <hr>
     <h3>Pointer</h3>
     <p class="section-desc">Select pointer style (system cursor hides when a custom pointer is selected).</p>
     <div id="pointer-options" class="swatch-grid pointer-grid" role="radiogroup" aria-label="Pointer Style">
@@ -129,13 +137,28 @@ Score: <span id="score">0</span> | Level: <span id="level">1</span> | Boosters: 
 <script src="js/collisions.js"></script>
 <script src="js/settings.js"></script>
 <script src="js/main.js"></script>
+<!-- Help button (keyboard: H) -->
+<div id="help-btn" title="Help">❓</div>
+
+<!-- Help modal -->
+<div id="help-modal" class="modal">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="help-title">
+    <span class="close-help close-btn" role="button" aria-label="Close">&times;</span>
+    <h2 id="help-title">How to play</h2>
+    <p>
+      Controls:
+      <ul>
+        <li>Move your <strong>mouse</strong> or <strong>touch</strong> to control the gravity field.</li>
+        <li>Use <kbd>Arrow Keys</kbd> to nudge the gravity field with the keyboard.</li>
+        <li>Press <kbd>L</kbd> or <kbd>Space</kbd> to toggle pointer <em>lock</em> (keyboard control).</li>
+        <li>Press <kbd>H</kbd> to open this help overlay.</li>
+      </ul>
+    </p>
+    <p>Collect targets, avoid obstacles, and use boosters. Keyboard controls and a help overlay improve accessibility for non-pointer users.</p>
+  </div>
+</div>
+
+<script src="js/help.js"></script>
 <script src="js/version.js"></script>
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js')
-      .then(() => console.log('Service Worker registered'))
-      .catch((err) => console.error('Service Worker failed:', err));
-  }
-</script>
 </body>
 </html>

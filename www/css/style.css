@@ -31,6 +31,7 @@ canvas {
   font-weight: 600;
   pointer-events: none; /* visually present but not clickable */
 }
+
 /* Version label styling */
 #version-label {
     position: fixed;
@@ -49,6 +50,24 @@ canvas {
 #version-label:hover {
     opacity: 1;
 } 
+
+/* help button */
+#help-btn {
+    position: fixed;
+    top: 10px;
+    right: 90px; /* sits left of the version label */
+    background-color: rgba(0,0,0,0.6);
+    color: white;
+    padding: 4px 8px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 9999;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+}
+
+#help-btn:hover { opacity: 1; }
 
 /* Settings button */
 .settings-btn {
@@ -129,8 +148,6 @@ canvas {
 
 /* Responsive tweaks */
 @media (max-width:520px){ .swatch, .pointer-swatch { width: 100%; height:48px; } .swatch-grid { grid-template-columns: repeat(2,1fr); } }
-
-
 
 /* Modal overlay */
 .modal {

@@ -67,12 +67,17 @@ SVG placeholders have been added to `www/icons/` for all PWA icon sizes and two 
 ```bash
 npm install --save-dev puppeteer
 ```
+
+Or use the convenience npm script: `npm run generate-pngs` (requires `puppeteer` to be installed).
+
 2. Run the provided script to render all `*.svg` to `*.png`:
 ```bash
-node scripts/generate-pngs.js
+npm run generate-pngs
 ```
 
 This will write PNG files into `www/icons/` next to the SVGs. (Rendering requires `puppeteer` and may download a Chromium binary.)
+
+Tip: For broader device compatibility consider committing generated PNGs to the repo (or produce them in your release pipeline) so platforms that prefer raster icons don't need to run the generator.
 
 ---
 

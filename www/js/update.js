@@ -14,8 +14,11 @@ function updatePlayer(){
     player.x += player.vx;
     player.y += player.vy;
 
-    if(player.y<0) player.y=0;
-    if(player.y>H) player.y=H;
+    // Wrap around screen edges
+    if (player.x < 0) player.x = W;
+    else if (player.x > W) player.x = 0;
+    if (player.y < 0) player.y = H;
+    else if (player.y > H) player.y = 0;
 }
 
 // Update world

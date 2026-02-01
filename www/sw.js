@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gravity-assist-cache-v2';
+const CACHE_NAME = 'gravity-assist-cache-v3';
 const urlsToCache = [
   './',
   './index.html',
@@ -54,33 +54,45 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+const OFFLINE_URL = './index.html';
 self.addEventListener('fetch', (event) => {
-  event.respondWith((async () => {
-    try {
-      const cached = await caches.match(event.request);
-      if (cached) return cached;
+  const req = event.request;
 
-      const networkResponse = await fetch(event.request);
-      // Only cache successful GET responses
-      if (networkResponse && networkResponse.status === 200 && event.request.method === 'GET') {
-        const responseClone = networkResponse.clone();
+  // Navigation requests (SPA) - network-first with cache fallback
+  if (req.mode === 'navigate' || (req.method === 'GET' && req.headers.get('accept') && req.headers.get('accept').includes('text/html'))) {
+    event.respondWith((async () => {
+      try {
+        const networkResponse = await fetch(req);
+        // update cache with latest index page
         const cache = await caches.open(CACHE_NAME);
-        cache.put(event.request, responseClone);
+        cache.put(OFFLINE_URL, (await fetch(OFFLINE_URL)).clone()).catch(() => {});
+        return networkResponse;
+      } catch (err) {
+        const cached = await caches.match(OFFLINE_URL);
+        return cached || new Response('<h1>Offline</h1>', { status: 503, headers: { 'Content-Type': 'text/html' } });
+      }
+    })());
+    return;
+  }
+
+  // For other assets: try cache first, then network, with image placeholder fallback
+  event.respondWith((async () => {
+    const cached = await caches.match(req);
+    if (cached) return cached;
+    try {
+      const networkResponse = await fetch(req);
+      if (networkResponse && networkResponse.status === 200 && req.method === 'GET') {
+        const clone = networkResponse.clone();
+        const cache = await caches.open(CACHE_NAME);
+        cache.put(req, clone).catch(() => {});
       }
       return networkResponse;
     } catch (err) {
-      // If image request, return a tiny inline SVG placeholder
-      if (event.request.destination === 'image') {
-        const placeholder = `<?xml version="1.0" encoding="utf-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
-  <rect width="100%" height="100%" fill="#111" />
-  <circle cx="128" cy="128" r="48" fill="#222" stroke="#fff" stroke-opacity="0.06" />
-</svg>`;
+      if (req.destination === 'image') {
+        const placeholder = `<?xml version="1.0" encoding="utf-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">\n  <rect width="100%" height="100%" fill="#111" />\n  <circle cx="128" cy="128" r="48" fill="#222" stroke="#fff" stroke-opacity="0.06" />\n</svg>`;
         return new Response(placeholder, { headers: { 'Content-Type': 'image/svg+xml' } });
       }
-      // Otherwise fall back to the cached index (app shell)
-      const cacheFallback = await caches.match('./index.html');
-      return cacheFallback;
+      return caches.match(OFFLINE_URL);
     }
   })());
 });
