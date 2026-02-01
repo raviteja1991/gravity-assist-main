@@ -1,0 +1,8 @@
+{
+  "app": { "name": "Gravity Assist", "version": "6.0" },
+  "cacheName": "gravity-assist-cache-v6",
+  "theme": { "brandBlue": "#1fb6ff", "brandPurple": "#7b2ff7", "background": "#000000" },
+  "defaults": { "brightness": 100, "trails": false, "sounds": false, "keyboard": false, "pointer": "dot", "bg": "black" },
+  "physics": { "acceleration": 0.01, "friction": 0.92, "respawnOffset": 50 },
+  "spawn": { "targetHueRange": [0, 360], "targetSat": "80%", "targetLight": "60%" }
+}

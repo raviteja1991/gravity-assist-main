@@ -5,7 +5,8 @@
   const closeBtn = document.querySelector('.close-settings');
   const bgOptions = document.getElementById('bg-options');
 
-  const DEFAULT = 'black';
+  const APP_DEFAULTS = (window.APP_CONFIG && window.APP_CONFIG.defaults) || {};
+  const DEFAULT = APP_DEFAULTS.bg || 'black';
   const KEY = 'gravity-bg-mode';
   const BRIGHT_KEY = 'gravity-bg-brightness';
   const GRADE_KEY = 'gravity-bg-grade';
@@ -18,8 +19,8 @@
 
   // brightness: percent 50..150 default 100
   let savedBright = parseInt(localStorage.getItem(BRIGHT_KEY), 10);
-  if (!savedBright || isNaN(savedBright)) savedBright = 100;
-  window.bgBrightness = savedBright / 100;
+  if (!savedBright || isNaN(savedBright)) savedBright = (typeof APP_DEFAULTS.brightness === 'number' ? APP_DEFAULTS.brightness : 100);
+  window.bgBrightness = savedBright / 100;  
 
   // grade: none|warm|cool|desat
   let savedGrade = localStorage.getItem(GRADE_KEY) || 'none';
@@ -27,10 +28,10 @@
   if (!GRADES.includes(savedGrade)) savedGrade = 'none';
   window.bgGrade = savedGrade;
 
-  // Trails setting (default: enabled)
+  // Trails setting (default from config)
   const TRAIL_KEY = 'gravity-trails-enabled';
   let savedTrail = localStorage.getItem(TRAIL_KEY);
-  if (savedTrail === null) savedTrail = 'true';
+  if (savedTrail === null) savedTrail = (APP_DEFAULTS.trails ? 'true' : 'false');
   window.trailsEnabled = (savedTrail === 'true');
 
   // Accessibility: keep track of previous active element and keyboard handler for modal
@@ -129,7 +130,7 @@
   // Pointer shape (dot, ring, crosshair, triangle, plus)
   const POINTER_KEY = 'gravity-pointer-shape';
   const POINTERS = ['dot','ring','crosshair','triangle','plus'];
-  const DEFAULT_POINTER = 'dot';
+  const DEFAULT_POINTER = APP_DEFAULTS.pointer || 'dot';
   let savedPointer = localStorage.getItem(POINTER_KEY) || DEFAULT_POINTER;
   if (!POINTERS.includes(savedPointer)) savedPointer = DEFAULT_POINTER;
   window.pointerShape = savedPointer;
@@ -137,13 +138,13 @@
   // Sounds toggle
   const SOUND_KEY = 'gravity-sounds-enabled';
   let savedSounds = localStorage.getItem(SOUND_KEY);
-  if (savedSounds === null) savedSounds = 'true';
+  if (savedSounds === null) savedSounds = (APP_DEFAULTS.sounds ? 'true' : 'false');
   window.soundsEnabled = (savedSounds === 'true');
 
   // Keyboard control toggle (enable arrow key control)
   const KEYBOARD_KEY = 'gravity-keyboard-control';
   let savedKeyboard = localStorage.getItem(KEYBOARD_KEY);
-  if (savedKeyboard === null) savedKeyboard = 'true';
+  if (savedKeyboard === null) savedKeyboard = (APP_DEFAULTS.keyboard ? 'true' : 'false');
   window.keyboardControlEnabled = (savedKeyboard === 'true');
   // pointer locked (when true, mousemove won't alter the gravity field)
   window.pointerLocked = false;

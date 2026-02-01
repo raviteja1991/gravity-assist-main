@@ -1,10 +1,16 @@
-// Version info
-const VERSION_NUMBER = '6.0';
+// Version info (resolved from APP_CONFIG if available)
+let VERSION_NUMBER = (window.APP_CONFIG && window.APP_CONFIG.app && window.APP_CONFIG.app.version) || 'unknown';
 let BUILD_DATE = new Date(); // fallback
 let BUILD_SHA = 'unknown';
 
 // try to load generated build-meta.json if present
-fetch('build-meta.json').then(r=>r.json()).then(m=>{ BUILD_DATE = new Date(m.date); BUILD_SHA = m.sha; }).catch(()=>{});
+fetch('build-meta.json')
+  .then(r => {
+    if (!r.ok) throw new Error('no build-meta');
+    return r.json();
+  })
+  .then(m => { BUILD_DATE = new Date(m.date); BUILD_SHA = m.sha; })
+  .catch(()=>{});
 
 // Elements
 const versionLabel = document.getElementById('version-label');
@@ -32,8 +38,10 @@ function _versionKeydownHandler(e){
 
 function openModal(){
     _versionPrevActive = document.activeElement;
+    const version = (window.APP_CONFIG && window.APP_CONFIG.app && window.APP_CONFIG.app.version) || VERSION_NUMBER;
+
     versionInfo.innerHTML = `
-        <strong>Version:</strong> ${VERSION_NUMBER} <br><br>
+        <strong>Version:</strong> ${version} <br><br>
         <strong>Build:</strong> ${BUILD_DATE.toLocaleString()} <br><br>
         <strong>Other Info:</strong> Gravity Assist Game
     `;

@@ -1,8 +1,9 @@
-const CACHE_NAME = 'gravity-assist-cache-v3';
+let CACHE_NAME = 'gravity-assist-cache-v6';
 const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
+  './config.json',
   './css/style.css',
   './js/spawn.js',
   './js/draw.js',
@@ -25,16 +26,28 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Cache opened');
-        return cache.addAll(urlsToCache);
-      })
-      .catch((error) => {
-        console.error('Cache installation failed:', error);
-      })
-  );
+  event.waitUntil((async () => {
+    try {
+      // attempt to derive cache name from runtime config
+      try {
+        const r = await fetch('config.json', { cache: 'no-store' });
+        if (r.ok) {
+          const cfg = await r.json();
+          if (cfg.cacheName) {
+            CACHE_NAME = cfg.cacheName;
+          } else if (cfg.app && cfg.app.version) {
+            CACHE_NAME = 'gravity-assist-cache-' + cfg.app.version;
+          }
+        }
+      } catch (e) {}
+
+      const cache = await caches.open(CACHE_NAME);
+      console.log('Cache opened', CACHE_NAME);
+      await cache.addAll(urlsToCache);
+    } catch (error) {
+      console.error('Cache installation failed:', error);
+    }
+  })());
   self.skipWaiting();
 });
 

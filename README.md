@@ -39,7 +39,7 @@ No libraries, no build steps — just open `index.html` and play.
 
 - **Physics**:
   - Velocity-based Euler integration
-  - Friction applied each frame (`vx *= 0.92`)
+  - Friction applied each frame (configured in `www/config.json` under `physics.friction`)
   - Screen wrap-around instead of walls
 
 - **Level Progression**:
@@ -59,6 +59,9 @@ No libraries, no build steps — just open `index.html` and play.
 ```bash
 npx http-server www
 ```
+
+Configuration: A runtime `www/config.json` is included to centralize app metadata (version, cache name), theme values, physics constants, and UI defaults. The app loads `config.json` at startup (`www/js/config-loader.js`) so you can tune gameplay and UI without changing source files. Note: do **not** store secrets (DB credentials, API keys) in `www/config.json`—it is publicly readable; keep secrets server-side or in environment variables.
+
 
 ### 🖼️ Icons & screenshots
 SVG placeholders have been added to `www/icons/` for all PWA icon sizes and two app screenshots (`screenshot-540x720.svg` and `screenshot-1280x720.svg`). If you need raster (PNG) versions for older platforms you can generate them locally:

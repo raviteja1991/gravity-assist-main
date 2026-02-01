@@ -18,7 +18,7 @@ This is a single-page HTML5 Canvas game. All game logic is in [index.html](../ww
 ## Project-specific conventions & patterns
 
 - No modules: code is global and inline. Avoid renaming globals without updating all uses in `index.html` and JS files.
-- Respawn pattern: off-screen entities are repositioned (e.g., `if(t.x<-50){ t.x=W+... }`). Follow this pattern for consistent behavior.
+- Respawn pattern: off-screen entities are repositioned (threshold is configurable via `www/config.json` `physics.respawnOffset`, e.g., `if(t.x < -respawnOffset){ ... }`). Follow this pattern for consistent behavior.
 - Colors use `hsl(...)` for targets. Fireworks and color-changes reuse that pattern.
 - Physics: simple Euler integration with friction (e.g., vx *= 0.92). Keep changes compatible with this lightweight loop to avoid unstable motion.
 
